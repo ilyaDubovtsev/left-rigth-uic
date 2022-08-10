@@ -1,0 +1,444 @@
+:root {
+  --color-accent-dark: #ffc4ea;
+  --color-accent-light: #e4e594;
+  --background-lighten: #222;
+  --background-lighter: #111;
+  --background: #000;
+  --color-text: #fff;
+  --font-family-default: "Montserrat", Arial, sans-serif;
+  --font-family-accent: "Stalinist One", cursive;
+}
+
+body {
+  margin: 0;
+  background-color: var(--background);
+  color: var(--color-text);
+  font-family: var(--font-family-default);
+  font-size: 16px;
+}
+
+.scores-info {
+  position: fixed;
+  right: 10px;
+  top: 10px;
+  padding: 20px;
+  font-size: 40px;
+  background: #ddd;
+  border: 1px solid #666;
+  border-radius: 8px;
+  z-index: 1000;
+  line-height: 1.5;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* Menu screen */
+.menu-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+}
+
+.container {
+  width: 1000px;
+}
+
+.repeat-container {
+  margin: 100px auto 0 auto;
+  text-align: center;
+}
+
+.game-name {
+  background: -webkit-linear-gradient(95deg, #fdbc01, #fe3a0e);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: #fff;
+  font-family: var(--font-family-accent);
+  font-size: 64px;
+  line-height: 64px;
+  text-align: center;
+}
+
+.enspired {
+  margin-top: 20px;
+  font-size: 24px;
+  line-height: 30px;
+  text-align: center;
+}
+
+.start-menu {
+  margin-right: auto;
+  margin-left: auto;
+  margin-top: 50px;
+  width: 520px;
+  font-size: 18px;
+  line-height: 24px;
+}
+
+.field {
+  display: flex;
+  margin-top: 20px;
+  align-items: baseline;
+  justify-content: flex-start;
+}
+
+.label {
+  width: 160px;
+  flex-shrink: 0;
+}
+
+.control {
+  width: 100%;
+  flex-grow: 1;
+}
+
+.control input[type="text"],
+.control input[type="email"],
+.control select {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.control input[type="text"],
+.control input[type="email"] {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.radio {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-start;
+}
+
+.radio label {
+  margin-right: 25px;
+}
+
+.submit {
+  margin-left: 160px;
+  margin-top: 30px;
+  padding: 10px 30px;
+  font-size: 24px;
+  border: 3px solid #fdbc01;
+  border-radius: 10px;
+  color: #fdbc01;
+  font-family: "Stalinist One", cursive;
+  background-color: transparent;
+}
+
+.repeat-link {
+  display: block;
+  margin-bottom: 20px;
+  padding: 10px 30px;
+  font-size: 24px;
+  border: 3px solid #fdbc01;
+  border-radius: 10px;
+  color: #fdbc01;
+  font-family: "Stalinist One", cursive;
+  background-color: transparent;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Game Screen */
+.game-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  width: 100vw;
+  height: 100vh;
+}
+
+.header {
+  padding: 25px 30px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 80px;
+  background-color: var(--background-lighten);
+  font-family: "Stalinist One", cursive;
+  font-size: 24px;
+  line-height: 30px;
+  box-sizing: border-box;
+}
+
+.username {
+  width: 33%;
+  color: var(--color-accent-dark);
+}
+
+.level {
+  width: 34%;
+  color: var(--color-accent-light);
+  text-align: center;
+}
+
+.score {
+  width: 33%;
+  color: var(--color-accent-dark);
+  text-align: right;
+}
+
+.level-task {
+  flex-shrink: 0;
+  padding: 40px 30px 45px;
+  background-color: var(--background-lighter);
+}
+
+.question {
+  margin-right: auto;
+  margin-left: auto;
+  max-width: 1000px;
+  font-size: 36px;
+  line-height: 40px;
+  text-align: center;
+}
+
+.answers {
+  margin-top: 30px;
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  font-size: 24px;
+  line-height: 28px;
+}
+
+.answers-left,
+.answers-right {
+  display: flex;
+  align-items: center;
+  width: 50%;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.answers-left {
+  justify-content: flex-end;
+  padding-right: 50px;
+  color: #9190ff;
+}
+
+.answers-right {
+  justify-content: flex-start;
+  padding-left: 50px;
+  color: #ff6ecc;
+}
+
+.answers-left::after,
+.answers-right::before {
+  content: "";
+  width: 46px;
+  height: 40px;
+  border: 2px solid;
+  border-radius: 6px;
+  background-repeat: no-repeat;
+}
+
+.answers-left::after {
+  margin-left: 15px;
+  border-color: rgba(145, 144, 255, 0.6);
+}
+
+.answers-right::before {
+  margin-right: 15px;
+  border-color: rgba(255, 110, 204, 0.6);
+}
+
+.answers-left::before,
+.answers-right::after {
+  content: "";
+  width: 0;
+  height: 0;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+}
+
+.answers-left::before {
+  border-right:12px solid rgb(145, 144, 255);
+  position: absolute;
+  right: 70px;
+}
+
+.answers-right::after {
+  border-left: 12px solid rgb(255, 110, 204);
+  position: absolute;
+  left: 71px;
+}
+
+.answers-pressed.answers-left::before {
+  border-right-color: #000;
+}
+
+.answers-pressed.answers-right::after {
+  border-left-color: #000;
+}
+
+.answers-pressed.answers-left::after {
+  background: rgb(145, 144, 255);
+}
+
+.answers-pressed.answers-right::before {
+  background: rgb(255, 110, 204);
+}
+
+.game-deck {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  flex-grow: 1;
+  height: 100%;
+}
+
+.counter {
+  position: absolute;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-family-accent);
+  font-size: 94px;
+  line-height: 1;
+  background: -webkit-linear-gradient(95deg, #0ff40a, #025201);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.limit {
+  position: absolute;
+  bottom: 50%;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #e40058;
+  z-index: 1000;
+  opacity: 0.5;
+}
+
+.limit-label {
+  position: absolute;
+  top: -15px;
+  left: 0;
+  padding: 4px 4px 4px 8px;
+  height: 32px;
+  background-color: #e40058;
+  font-family: var(--font-family-accent);
+  font-size: 20px;
+  line-height: 24px;
+  box-sizing: border-box;
+}
+
+.limit-label::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 100%;
+  border: 16px solid transparent;
+  border-right: none;
+  border-left-color: #e40058;
+}
+
+.bricks {
+  overflow: hidden;
+  position: relative;
+  height: 100%;
+}
+
+.brick {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  padding: 3px 10px 5px;
+  transform: translateX(-50%) translateY(0);
+  background-color: #c9e5e9;
+  color: var(--background);
+  font-size: 32px;
+  line-height: 36px;
+  white-space: nowrap;
+  font-family: monospace;
+}
+
+.brick.emoji {
+  padding: 0;
+  height: 44px;
+  background-color: transparent;
+  font-size: 48px;
+  line-height: 44px;
+}
+
+.animate {
+  transition-property: transform;
+  transition-duration: 0s;
+  transition-timing-function: linear;
+}
+
+/* End game */
+.end-game {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+}
+
+.result {
+  color: #fff;
+  font-family: var(--font-family-accent);
+  font-size: 64px;
+  line-height: 64px;
+  text-align: center;
+}
+
+.result.win {
+  background: -webkit-linear-gradient(95deg, #0ff40a, #025201);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.result.lose {
+  background: -webkit-linear-gradient(95deg, #f60351, #740030);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.total {
+  margin-top: 20px;
+  font-size: 30px;
+  line-height: 30px;
+  text-align: center;
+}
+
+.scores-table {
+  padding: 30px;
+  font-size: 0;
+}
+
+.scores-table table {
+  font-size: 24px;
+}
+
+.scores-table table {
+  border-collapse: collapse;
+}
+
+.scores-table th {
+  text-align: left;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 5px 5px 15px;
+  border-bottom: 1px solid #0ff40a;
+  font-family: "Stalinist One", cursive;
+}
+
+.scores-table td,
+.scores-table th {
+  padding: 5px 50px 5px 5px;
+}

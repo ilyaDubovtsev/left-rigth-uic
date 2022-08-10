@@ -1,0 +1,69 @@
+{
+    "true-false": {
+        question: "Чему равно выражение?",
+        answers: [
+            "false",
+            "true"
+        ],
+        tasks: []
+    },
+    "es5": {
+        question: "Эта возможность языка была добавлена в ES5?",
+        answers: [
+            "Да, была",
+            "Нет"
+        ],
+        tasks: [
+            ["for (let i of items) {}", 1],
+            ["for (var k in keys) {}", 0],
+            ["new Symbol", 1],
+            ["Object.keys(obj)", 0],
+            ["Array.filter()", 0],
+            ["class Name {}", 1],
+            ["import module from \"es6\"", 1],
+            ["`${variable}`", 1],
+            ["const [ name, email] = [\"Вася\", \"pupkin@vasya.ru\"]", 1],
+            ["var obj = { a: 1, b: 2}", 0],
+            ["...rest", 1],
+            ["() => {}", 1],
+            ["let", 1],
+            ["const", 1],
+            ["indexOf", 0],
+            ["console.log", 0],
+            ["Object.getOwnPropertyNames", 0],
+            ["Array.forEach()", 0],
+        ]
+    },
+    "lodash": {
+        question: "Чей это метод?",
+        answers: [
+            "lodash",
+            "Array"
+        ],
+        tasks: []
+    },
+    "falsy": {
+        question: "falsy ли это выражение?",
+        answers: [
+            "не falsy",
+            "falsy"
+        ],
+        tasks: []
+    },
+    "jquery": {
+        question: "Есть ли это в jQuery?",
+        answers: [
+            "Нет",
+            "Есть"
+        ],
+        tasks: []
+    },
+    "bug": {
+        question: "Баг или фича",
+        answers: [
+            "Баг",
+            "Фича"
+        ],
+        tasks: []
+    }
+}
