@@ -411,11 +411,13 @@ class HtmlHelper {
   static renderScore(verdict) {
     const endGameScreen = document.querySelector(".end-game");
     const result = document.querySelector(".end-game .result");
+    const repeatContainer = document.querySelector(".end-game .repeat-container");
     const score = document.querySelector("#score");
 
     App.controls.gameScreen.classList.add("hidden");
     endGameScreen.classList.remove("hidden");
-    if (verdict === "lose") {
+    let lose = verdict === "lose";
+    if (lose) {
       result.classList.remove("win");
       result.classList.add("lose");
       result.textContent = "Потрачено";
@@ -424,6 +426,10 @@ class HtmlHelper {
       result.classList.add("win");
       result.textContent = "Победа";
     }
+
+    repeatContainer.querySelector(".repeat-link#finish-link").innerHTML = lose ? "Сдаться и дать поиграть другому" : "Дать поиграть другому";
+    repeatContainer.querySelector(".repeat-link#retry-link").innerHTML = lose ? "Не сдаваться и попробовать еще раз" : "Попробовать еще раз";
+
     score.textContent = App.controls.score.textContent;
   }
 }
