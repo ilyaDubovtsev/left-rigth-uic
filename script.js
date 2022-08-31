@@ -360,6 +360,7 @@ const App = {
       App.info.userSteps = 0;
       App.tasks = null;
       App.controls.deck.innerHTML = "";
+      App.controls.counter.innerHTML = "5";
     },
 
     loose: function(data) {
