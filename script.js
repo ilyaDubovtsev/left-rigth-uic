@@ -674,28 +674,6 @@ const start = function() {
   var formData = new FormData(form);
 
   for (var [key, value] of formData.entries()) {
-    if (key === "level") {
-      App.vars.limitErrors = +value;
-      if (+value === 0) {
-        App.controls.limit.style.bottom = "-100px";
-      } else {
-        App.controls.limit.style.bottom = App.constants.height * +value + "px";
-      }
-      // switch (+value) {
-      //   case 5:
-      //     App.controls.level.textContent = "Пишу тесты";
-      //     break;
-      //   case 3:
-      //     App.controls.level.textContent = "Типизирую";
-      //     break;
-      //   case 1:
-      //     App.controls.level.textContent = "Пользуюсь SVN";
-      //     break;
-      //   case 0:
-      //     App.controls.level.textContent = "Форс-пуш в мастер";
-      //     break;
-      // }
-    }
     if (key === "theme") {
       App.vars.theme = value;
       App.constants.maxSteps = initTasks[App.vars.theme].tasks.length;
@@ -712,6 +690,8 @@ const start = function() {
       App.user[key] = value;
     }
   }
+
+  App.controls.limit.style.bottom = App.constants.height * App.vars.limitErrors + "px";
 
   HtmlHelper.hideScores();
   App.gameId = Date.now();
