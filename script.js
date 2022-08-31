@@ -1,3 +1,5 @@
+// noinspection DuplicatedCode,ES6ConvertVarToLetConst
+
 //#region Tasks
 
 const initTasks = {
@@ -493,7 +495,7 @@ const start = function() {
           initTasks[App.vars.theme].answers[1];
     } else if (key === "name") {
       App.user[key] = value;
-      App.controls.username.textContent = value;
+      App.controls.username.textContent = value.toString();
     } else {
       App.user[key] = value;
     }
@@ -510,7 +512,7 @@ const start = function() {
   var readyCounter = 5;
   var interval = setInterval(() => {
     readyCounter--;
-    App.controls.counter.textContent = readyCounter;
+    App.controls.counter.textContent = readyCounter.toString();
     if (readyCounter < 1) {
       App.controls.counter.classList.add("hidden");
       clearInterval(interval);
@@ -532,7 +534,7 @@ const retry = function() {
   var readyCounter = 5;
   var interval = setInterval(() => {
     readyCounter--;
-    App.controls.counter.textContent = readyCounter;
+    App.controls.counter.textContent = readyCounter.toString();
     if (readyCounter < 1) {
       App.controls.counter.classList.add("hidden");
       clearInterval(interval);
@@ -745,8 +747,8 @@ const userFailChoice = brick => {
 
 function getComputedTranslateY(obj) {
   if (!window.getComputedStyle) return;
-  var style = getComputedStyle(obj),
-      transform = style.transform || style.webkitTransform || style.mozTransform;
+  var style = getComputedStyle(obj);
+  var transform = style.transform;
   var mat = transform.match(/^matrix3d\((.+)\)$/);
   if (mat) return parseFloat(mat[1].split(", ")[13]);
   mat = transform.match(/^matrix\((.+)\)$/);
