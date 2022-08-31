@@ -664,6 +664,13 @@ const run = function() {
 
 const start = function() {
   const form = document.querySelector(".start-menu");
+
+  for (let input of form.querySelectorAll("input")) {
+    if (!input.reportValidity()) {
+      return;
+    }
+  }
+
   var formData = new FormData(form);
 
   for (var [key, value] of formData.entries()) {
