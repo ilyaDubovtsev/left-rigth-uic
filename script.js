@@ -135,7 +135,7 @@ const initTasks = {
     ]
   },
   jquery: {
-    question: "Это медот jQuery 3.x?",
+    question: "Это метод jQuery 3.x?",
     answers: ["Нет", "Есть"],
     tasks: [
       [".add()", 1],
@@ -187,7 +187,7 @@ const initTasks = {
     ]
   },
   java: {
-    question: "Это...",
+    question: "Это Java 8.x или JavaScript?",
     answers: ["Java", "JavaScript"],
     tasks: [
       ["new Map()", 1],
@@ -661,6 +661,19 @@ const run = function() {
 
   brick.addEventListener("transitionend", onDropTransitionEnd);
 };
+
+const init = function() {
+  const form = document.querySelector(".start-menu");
+  const themeSelect = form.querySelector("select#theme");
+
+  for (let [value, theme] of Object.entries(initTasks)) {
+    const newOption = document.createElement("option");
+    newOption.setAttribute("value", value);
+    newOption.innerText = theme.question;
+
+    themeSelect.appendChild(newOption);
+  }
+}
 
 const start = function() {
   const form = document.querySelector(".start-menu");
