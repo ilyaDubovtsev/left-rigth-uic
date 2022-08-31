@@ -1,4 +1,18 @@
+//#region Tasks
+
 const initTasks = {
+  test: {
+    question: "test",
+    answers: ["right", "wrong"],
+    tasks: [
+        ["choose", 0],
+        ["choose", 0],
+        ["choose", 0],
+        ["choose", 0],
+        ["choose", 0],
+        ["choose", 0],
+    ]
+  },
   es5: {
     question: "Эта возможность была в ES5?",
     answers: ["Нет", "Да"],
@@ -317,6 +331,10 @@ const initTasks = {
   }
 };
 
+//#endregion
+
+//#region Models
+
 const App = {
   gameId: null,
   user: {
@@ -435,10 +453,76 @@ class HtmlHelper {
   }
 }
 
+//#endregion
+
+//#region Game
+
+const initStartMenu = function() {
+  const form = document.querySelector(".start-menu");
+  const themeSelect = form.querySelector("select#theme");
+
+  for (let [value, theme] of Object.entries(initTasks)) {
+    const newOption = document.createElement("option");
+    newOption.setAttribute("value", value);
+    newOption.innerText = theme.question;
+
+    themeSelect.appendChild(newOption);
+  }
+}
+
+const start = function() {
+  const form = document.querySelector(".start-menu");
+
+  for (let field of form.querySelectorAll("[required]")) {
+    if (!field.reportValidity()) {
+      return;
+    }
+  }
+
+  var formData = new FormData(form);
+
+  for (var [key, value] of formData.entries()) {
+    if (key === "theme") {
+      App.vars.theme = value;
+      App.constants.maxSteps = initTasks[App.vars.theme].tasks.length;
+      App.tasks = JSON.parse(JSON.stringify(initTasks[App.vars.theme].tasks));
+      App.controls.question.textContent = initTasks[App.vars.theme].question;
+      App.controls.answersLeft.textContent =
+          initTasks[App.vars.theme].answers[0];
+      App.controls.answersRight.textContent =
+          initTasks[App.vars.theme].answers[1];
+    } else if (key === "name") {
+      App.user[key] = value;
+      App.controls.username.textContent = value;
+    } else {
+      App.user[key] = value;
+    }
+  }
+
+  App.controls.limit.style.bottom = App.constants.height * App.vars.limitErrors + "px";
+
+  HtmlHelper.hideScores();
+  App.gameId = Date.now();
+  App.controls.startMenu.classList.add("hidden");
+  App.controls.gameScreen.classList.remove("hidden");
+  App.controls.counter.classList.remove("hidden");
+
+  var readyCounter = 5;
+  var interval = setInterval(() => {
+    readyCounter--;
+    App.controls.counter.textContent = readyCounter;
+    if (readyCounter < 1) {
+      App.controls.counter.classList.add("hidden");
+      clearInterval(interval);
+      run();
+    }
+  }, 1000);
+};
+
 const retry = function() {
+  HtmlHelper.hideScores();
   App.constants.maxSteps = initTasks[App.vars.theme].tasks.length;
   App.tasks = JSON.parse(JSON.stringify(initTasks[App.vars.theme].tasks));
-  HtmlHelper.hideScores();
   App.gameId = Date.now();
   App.controls.startMenu.classList.add("hidden");
   App.controls.endMenu.classList.add("hidden");
@@ -455,6 +539,67 @@ const retry = function() {
       run();
     }
   }, 1000);
+};
+
+const run = function() {
+  const indexRandomTask = Math.floor(Math.random() * App.tasks.length);
+  const task = App.tasks[indexRandomTask];
+  if (!task) {
+    throw new Error(
+        "Не могу взять таск " + indexRandomTask + ";" + App.tasks.length
+    );
+  }
+
+  App.controls.left.textContent = App.tasks.length;
+
+  const [content, side] = task;
+  App.tasks.splice(indexRandomTask, 1);
+
+  const brick = createBrick(content, side);
+
+  const onArrowKeyDown = function(evt) {
+    const leftArrow = 37;
+    const rightArrow = 39;
+
+    // игнорируем любые нажатия кроме стрелки влево вправо
+    if (evt.keyCode !== leftArrow && evt.keyCode !== rightArrow) {
+      return false;
+    }
+
+    if (evt.keyCode === leftArrow) {
+      App.controls.answersLeft.classList.add("answers-pressed");
+    }
+    if (evt.keyCode === rightArrow) {
+      App.controls.answersRight.classList.add("answers-pressed");
+    }
+
+    // удаляем события?
+    brick.removeEventListener("transitionend", onDropTransitionEnd);
+    document.removeEventListener("keydown", onArrowKeyDown);
+
+    // проверяем правильный ли выбор сдел пользователь
+    const userSide = evt.keyCode === leftArrow ? 0 : 1;
+    if (userSide === side) {
+      userGoodChoice(brick, side);
+    } else {
+      userFailChoice(brick);
+    }
+  };
+
+  document.addEventListener("keydown", onArrowKeyDown);
+
+  const onDropTransitionEnd = function() {
+    brick.classList.remove("animate");
+    brick.style.transitionDuration = "";
+
+    document.removeEventListener("keydown", onArrowKeyDown);
+    App.info.userSteps++;
+    App.info.errorCount++;
+    nextEvent();
+    brick.removeEventListener("transitionend", onDropTransitionEnd);
+  };
+
+  brick.addEventListener("transitionend", onDropTransitionEnd);
 };
 
 const nextEvent = function() {
@@ -476,6 +621,21 @@ const nextEvent = function() {
       userSteps: App.info.userSteps
     });
   }
+};
+
+const createBrick = function(content, side) {
+  const brick = document.createElement("div");
+  brick.classList.add("brick");
+  if (App.vars.theme === "bug") {
+    brick.classList.add("emoji");
+  }
+  brick.textContent = content;
+  brick.dataset.side = side;
+  App.controls.deck.appendChild(brick);
+
+  animateBrick(brick);
+
+  return brick;
 };
 
 const animateBrick = function(brick) {
@@ -546,16 +706,6 @@ const userGoodChoice = (brick, side) => {
   brick.addEventListener("transitionend", onSuccessTransitionEnd);
 };
 
-function getComputedTranslateY(obj) {
-  if (!window.getComputedStyle) return;
-  var style = getComputedStyle(obj),
-    transform = style.transform || style.webkitTransform || style.mozTransform;
-  var mat = transform.match(/^matrix3d\((.+)\)$/);
-  if (mat) return parseFloat(mat[1].split(", ")[13]);
-  mat = transform.match(/^matrix\((.+)\)$/);
-  return mat ? parseFloat(mat[1].split(", ")[5]) : 0;
-}
-
 const userFailChoice = brick => {
   App.controls.score.textContent = (
     App.controls.score.textContent -
@@ -593,143 +743,19 @@ const userFailChoice = brick => {
   brick.addEventListener("transitionend", onFailTransitionEnd);
 };
 
-const createBrick = function(content, side) {
-  const brick = document.createElement("div");
-  brick.classList.add("brick");
-  if (App.vars.theme === "bug") {
-    brick.classList.add("emoji");
-  }
-  brick.textContent = content;
-  brick.dataset.side = side;
-  App.controls.deck.appendChild(brick);
-
-  animateBrick(brick);
-
-  return brick;
-};
-
-const run = function() {
-  const indexRandomTask = Math.floor(Math.random() * App.tasks.length);
-  const task = App.tasks[indexRandomTask];
-  if (!task) {
-    throw new Error(
-      "Не могу взять таск " + indexRandomTask + ";" + App.tasks.length
-    );
-  }
-
-  App.controls.left.textContent = App.tasks.length;
-
-  const [content, side] = task;
-  App.tasks.splice(indexRandomTask, 1);
-
-  const brick = createBrick(content, side);
-
-  const onArrowKeyDown = function(evt) {
-    const leftArrow = 37;
-    const rightArrow = 39;
-
-    // игнорируем любые нажатия кроме стрелки влево вправо
-    if (evt.keyCode !== leftArrow && evt.keyCode !== rightArrow) {
-      return false;
-    }
-
-    if (evt.keyCode === leftArrow) {
-        App.controls.answersLeft.classList.add("answers-pressed");
-    }
-    if (evt.keyCode === rightArrow) {
-        App.controls.answersRight.classList.add("answers-pressed");
-    }
-
-    // удаляем события?
-    brick.removeEventListener("transitionend", onDropTransitionEnd);
-    document.removeEventListener("keydown", onArrowKeyDown);
-
-    // проверяем правильный ли выбор сдел пользователь
-    const userSide = evt.keyCode === leftArrow ? 0 : 1;
-    if (userSide === side) {
-      userGoodChoice(brick, side);
-    } else {
-      userFailChoice(brick);
-    }
-  };
-
-  document.addEventListener("keydown", onArrowKeyDown);
-
-  const onDropTransitionEnd = function() {
-    brick.classList.remove("animate");
-    brick.style.transitionDuration = "";
-
-    document.removeEventListener("keydown", onArrowKeyDown);
-    App.info.userSteps++;
-    App.info.errorCount++;
-    nextEvent();
-    brick.removeEventListener("transitionend", onDropTransitionEnd);
-  };
-
-  brick.addEventListener("transitionend", onDropTransitionEnd);
-};
-
-const init = function() {
-  const form = document.querySelector(".start-menu");
-  const themeSelect = form.querySelector("select#theme");
-
-  for (let [value, theme] of Object.entries(initTasks)) {
-    const newOption = document.createElement("option");
-    newOption.setAttribute("value", value);
-    newOption.innerText = theme.question;
-
-    themeSelect.appendChild(newOption);
-  }
+function getComputedTranslateY(obj) {
+  if (!window.getComputedStyle) return;
+  var style = getComputedStyle(obj),
+      transform = style.transform || style.webkitTransform || style.mozTransform;
+  var mat = transform.match(/^matrix3d\((.+)\)$/);
+  if (mat) return parseFloat(mat[1].split(", ")[13]);
+  mat = transform.match(/^matrix\((.+)\)$/);
+  return mat ? parseFloat(mat[1].split(", ")[5]) : 0;
 }
 
-const start = function() {
-  const form = document.querySelector(".start-menu");
+//#endregion
 
-  for (let field of form.querySelectorAll("[required]")) {
-    if (!field.reportValidity()) {
-      return;
-    }
-  }
-
-  var formData = new FormData(form);
-
-  for (var [key, value] of formData.entries()) {
-    if (key === "theme") {
-      App.vars.theme = value;
-      App.constants.maxSteps = initTasks[App.vars.theme].tasks.length;
-      App.tasks = JSON.parse(JSON.stringify(initTasks[App.vars.theme].tasks));
-      App.controls.question.textContent = initTasks[App.vars.theme].question;
-      App.controls.answersLeft.textContent =
-        initTasks[App.vars.theme].answers[0];
-      App.controls.answersRight.textContent =
-        initTasks[App.vars.theme].answers[1];
-    } else if (key === "name") {
-      App.user[key] = value;
-      App.controls.username.textContent = value;
-    } else {
-      App.user[key] = value;
-    }
-  }
-
-  App.controls.limit.style.bottom = App.constants.height * App.vars.limitErrors + "px";
-
-  HtmlHelper.hideScores();
-  App.gameId = Date.now();
-  App.controls.startMenu.classList.add("hidden");
-  App.controls.gameScreen.classList.remove("hidden");
-  App.controls.counter.classList.remove("hidden");
-
-  var readyCounter = 5;
-  var interval = setInterval(() => {
-    readyCounter--;
-    App.controls.counter.textContent = readyCounter;
-    if (readyCounter < 1) {
-      App.controls.counter.classList.add("hidden");
-      clearInterval(interval);
-      run();
-    }
-  }, 1000);
-};
+//#region Scores
 
 const hideEmail = (email = "noname@email") => {
   return email.split("@")[0] + "@***";
@@ -792,3 +818,5 @@ const getScoresTable = () => {
     rows +
     "</tbody></table>";
 };
+
+//#endregion
