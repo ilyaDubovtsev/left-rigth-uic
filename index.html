@@ -42,8 +42,9 @@
                         <label for="theme">Тема</label>
                     </div>
                     <div class="control">
-                        <select id="theme" name="theme">
-                            <option value="es5" selected>Эта возможность была в ES5?</option>
+                        <select id="theme" name="theme" required>
+                            <option hidden disabled selected value> -- выбери тему -- </option>
+                            <option value="es5">Эта возможность была в ES5?</option>
                             <option value="java">Это Java 8.x или JavaScript?</option>
                             <option value="lodash">Это метод нативного Array?</option>
                             <!-- <option value="falsy">Это выражение falsy?</option> -->

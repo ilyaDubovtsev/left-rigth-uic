@@ -665,8 +665,8 @@ const run = function() {
 const start = function() {
   const form = document.querySelector(".start-menu");
 
-  for (let input of form.querySelectorAll("input")) {
-    if (!input.reportValidity()) {
+  for (let field of form.querySelectorAll("[required]")) {
+    if (!field.reportValidity()) {
       return;
     }
   }
