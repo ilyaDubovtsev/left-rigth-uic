@@ -600,23 +600,22 @@ const run = function() {
 };
 
 const nextEvent = function() {
+  const data = {
+    user: App.user,
+    errorCount: App.info.errorCount,
+    userSteps: App.info.userSteps,
+    limitErrors: App.vars.limitErrors
+  };
+
   if (
     App.info.errorCount < App.vars.limitErrors &&
     App.info.userSteps < App.constants.maxSteps
   ) {
     run();
   } else if (App.info.errorCount >= App.vars.limitErrors) {
-    App.events.loose({
-      user: App.user,
-      errorCount: App.info.errorCount,
-      userSteps: App.info.userSteps
-    });
+    App.events.loose(data);
   } else if (App.info.userSteps >= App.constants.maxSteps) {
-    App.events.win({
-      user: App.user,
-      errorCount: App.info.errorCount,
-      userSteps: App.info.userSteps
-    });
+    App.events.win(data);
   }
 };
 
@@ -761,17 +760,17 @@ const hideEmail = (email = "noname@email") => {
 const getScoresTable = () => {
   const results = Storage.getScores();
   const rows = Object.values(results)
-    .map(({ errorCount, user, userSteps }) => {
-      const { email, level, name } = user;
-      if (+level === 0) {
+    .map(({ errorCount, user, userSteps, limitErrors }) => {
+      const { email, name } = user;
+      if (+limitErrors === 0) {
         return null;
       }
 
       let rightAnswers = userSteps - errorCount;
       let score;
-      const isWin = errorCount < +level;
+      const isWin = errorCount < +limitErrors;
 
-      if (+level === 5) {
+      if (+limitErrors === 5) {
         if (isWin) {
           score = errorCount === 0 ? rightAnswers + 10 : rightAnswers + 5;
         } else {
@@ -779,7 +778,7 @@ const getScoresTable = () => {
         }
       }
 
-      if (+level === 3) {
+      if (+limitErrors === 3) {
         if (isWin) {
           score = errorCount === 0 ? rightAnswers + 12 : rightAnswers + 7;
         } else {
@@ -787,7 +786,7 @@ const getScoresTable = () => {
         }
       }
 
-      if (+level === 1) {
+      if (+limitErrors === 1) {
         if (isWin) {
           score = errorCount === 0 ? rightAnswers + 14 : rightAnswers + 9;
         } else {
