@@ -375,24 +375,14 @@ const App = {
     left: document.querySelector("#left")
   },
   events: {
-    init: function() {
-      App.info.errorCount = 0;
-      App.info.userSteps = 0;
-      App.tasks = null;
-      App.controls.deck.innerHTML = "";
-      App.controls.counter.innerHTML = "5";
-    },
-
     loose: function(data) {
       Storage.saveScore(data);
       HtmlHelper.renderScore("lose");
-      App.events.init();
     },
 
     win: function(data) {
       Storage.saveScore(data);
       HtmlHelper.renderScore("win");
-      App.events.init();
     }
   }
 };
@@ -422,13 +412,6 @@ class Storage {
 }
 
 class HtmlHelper {
-  static hideScores() {
-    const scores = document.querySelector(".scores-info");
-    if (scores) {
-      scores.remove();
-    }
-  }
-
   static renderScore(verdict) {
     const endGameScreen = document.querySelector(".end-game");
     const result = document.querySelector(".end-game .result");
@@ -472,65 +455,77 @@ const initStartMenu = function() {
   }
 }
 
-const start = function() {
+const validateForm = function() {
   const form = document.querySelector(".start-menu");
 
   for (let field of form.querySelectorAll("[required]")) {
     if (!field.reportValidity()) {
-      return;
+      return false;
     }
   }
 
-  var formData = new FormData(form);
+  return true;
+}
 
-  for (var [key, value] of formData.entries()) {
-    if (key === "theme") {
-      App.vars.theme = value;
-      App.constants.maxSteps = initTasks[App.vars.theme].tasks.length;
-      App.tasks = JSON.parse(JSON.stringify(initTasks[App.vars.theme].tasks));
-      App.controls.question.textContent = initTasks[App.vars.theme].question;
-      App.controls.answersLeft.textContent =
-          initTasks[App.vars.theme].answers[0];
-      App.controls.answersRight.textContent =
-          initTasks[App.vars.theme].answers[1];
-    } else if (key === "name") {
-      App.user[key] = value;
-      App.controls.username.textContent = value.toString();
-    } else {
-      App.user[key] = value;
-    }
+const onStart = function() {
+  if (!validateForm()) {
+    return;
   }
 
-  App.controls.limit.style.bottom = App.constants.height * App.vars.limitErrors + "px";
+  start(true);
+}
 
-  HtmlHelper.hideScores();
-  App.gameId = Date.now();
-  App.controls.startMenu.classList.add("hidden");
-  App.controls.gameScreen.classList.remove("hidden");
-  App.controls.counter.classList.remove("hidden");
+const onRetry = function() {
+  start(false);
+}
 
-  var readyCounter = 5;
-  var interval = setInterval(() => {
-    readyCounter--;
-    App.controls.counter.textContent = readyCounter.toString();
-    if (readyCounter < 1) {
-      App.controls.counter.classList.add("hidden");
-      clearInterval(interval);
-      run();
+const start = function(newGame) {
+  if (newGame || !App.initialized) {
+    const form = document.querySelector(".start-menu");
+
+    var formData = new FormData(form);
+
+    for (var [key, value] of formData.entries()) {
+      if (key === "theme") {
+        App.vars.theme = value;
+        App.constants.maxSteps = initTasks[App.vars.theme].tasks.length;
+        App.originalTasks = JSON.parse(JSON.stringify(initTasks[App.vars.theme].tasks));
+        App.controls.question.textContent = initTasks[App.vars.theme].question;
+        App.controls.answersLeft.textContent =
+            initTasks[App.vars.theme].answers[0];
+        App.controls.answersRight.textContent =
+            initTasks[App.vars.theme].answers[1];
+      } else if (key === "name") {
+        App.user[key] = value;
+        App.controls.username.textContent = value.toString();
+      } else {
+        App.user[key] = value;
+      }
     }
-  }, 1000);
-};
 
-const retry = function() {
-  HtmlHelper.hideScores();
-  App.constants.maxSteps = initTasks[App.vars.theme].tasks.length;
-  App.tasks = JSON.parse(JSON.stringify(initTasks[App.vars.theme].tasks));
+    App.controls.limit.style.bottom = App.constants.height * App.vars.limitErrors + "px";
+
+    App.initialized = true;
+  }
+
+  App.tasks = Array.from(App.originalTasks);
+
   App.gameId = Date.now();
   App.controls.startMenu.classList.add("hidden");
   App.controls.endMenu.classList.add("hidden");
   App.controls.gameScreen.classList.remove("hidden");
   App.controls.counter.classList.remove("hidden");
 
+  App.info.errorCount = 0;
+  App.info.userSteps = 0;
+  App.controls.deck.innerHTML = "";
+  App.controls.counter.innerHTML = App.vars.limitErrors;
+  App.controls.left.innerHTML = App.tasks.length;
+
+  countToZero();
+};
+
+const countToZero = function() {
   var readyCounter = 5;
   var interval = setInterval(() => {
     readyCounter--;
@@ -541,7 +536,7 @@ const retry = function() {
       run();
     }
   }, 1000);
-};
+}
 
 const run = function() {
   const indexRandomTask = Math.floor(Math.random() * App.tasks.length);
