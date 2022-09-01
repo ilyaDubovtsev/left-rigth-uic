@@ -421,6 +421,16 @@ body {
   font-size: 0;
 }
 
+.scores-table h1 {
+  padding: 0;
+  font-size: 24px;
+  color: #fdbc01;
+}
+
+.scores-table h1:not(:first-child) {
+  margin-top: 64px;
+}
+
 .scores-table table {
   font-size: 24px;
 }

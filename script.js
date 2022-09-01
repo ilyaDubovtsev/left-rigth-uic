@@ -602,6 +602,7 @@ const run = function() {
 const nextEvent = function() {
   const data = {
     user: App.user,
+    theme: App.vars.theme,
     errorCount: App.info.errorCount,
     userSteps: App.info.userSteps,
     limitErrors: App.vars.limitErrors
@@ -754,52 +755,64 @@ function getComputedTranslateY(obj) {
 //#region Scores
 
 const getScoresTable = () => {
-  const results = Storage.getScores();
-  const rows = Object.values(results)
-    .map(({ errorCount, user, userSteps, limitErrors }) => {
-      const { telegram, name } = user;
-      if (+limitErrors === 0) {
-        return null;
-      }
+  const allScores = Object.values(Storage.getScores());
 
-      let rightAnswers = userSteps - errorCount;
-      let score;
-      const isWin = errorCount < +limitErrors;
+  const scoresByTheme = {};
 
-      if (+limitErrors === 5) {
-        if (isWin) {
-          score = errorCount === 0 ? rightAnswers + 10 : rightAnswers + 5;
-        } else {
-          score = rightAnswers - 10;
-        }
-      }
+  for (let [theme] of Object.entries(initTasks)) {
+    scoresByTheme[theme] = allScores.filter(r => r.theme === theme);
+  }
 
-      if (+limitErrors === 3) {
-        if (isWin) {
-          score = errorCount === 0 ? rightAnswers + 12 : rightAnswers + 7;
-        } else {
-          score = rightAnswers - 13;
-        }
-      }
+  const scoresTablesContainer = document.querySelector(".scores-table");
 
-      if (+limitErrors === 1) {
-        if (isWin) {
-          score = errorCount === 0 ? rightAnswers + 14 : rightAnswers + 9;
-        } else {
-          score = rightAnswers - 15;
-        }
-      }
+  let html = "";
 
-      return {
-        name,
-        telegram,
-        score
-      };
-    })
-    .filter(i => i)
-    .sort((a, b) => b.score - a.score)
-    .map(({ name, telegram, score }) => {
-      return `<tr>
+  for (let [theme, scores] of Object.entries(scoresByTheme)) {
+    const rows = scores
+        .map(({ errorCount, user, userSteps, limitErrors }) => {
+          const { telegram, name } = user;
+          if (+limitErrors === 0) {
+            return null;
+          }
+
+          let rightAnswers = userSteps - errorCount;
+          let score;
+          const isWin = errorCount < +limitErrors;
+
+          if (+limitErrors === 5) {
+            if (isWin) {
+              score = errorCount === 0 ? rightAnswers + 10 : rightAnswers + 5;
+            } else {
+              score = rightAnswers - 10;
+            }
+          }
+
+          if (+limitErrors === 3) {
+            if (isWin) {
+              score = errorCount === 0 ? rightAnswers + 12 : rightAnswers + 7;
+            } else {
+              score = rightAnswers - 13;
+            }
+          }
+
+          if (+limitErrors === 1) {
+            if (isWin) {
+              score = errorCount === 0 ? rightAnswers + 14 : rightAnswers + 9;
+            } else {
+              score = rightAnswers - 15;
+            }
+          }
+
+        return {
+          name,
+          telegram,
+          score
+        };
+      })
+      .filter(i => i)
+      .sort((a, b) => b.score - a.score)
+      .map(({ name, telegram, score }) => {
+        return `<tr>
           <td>${name}</td>
           <td>
             <div class="scores-telegram-container">
@@ -808,12 +821,19 @@ const getScoresTable = () => {
             </div>
           </td>
           <td align="right">${score * 42}</td>
-        </tr>`;
-    });
-  document.querySelector(".scores-table").innerHTML =
-    "<table><thead><tr><th>Имя</th><th>Телеграм</th><th>Рейтинг</th></tr></thead><tbody>" +
-    rows +
-    "</tbody></table>";
+          </tr>`;
+        }
+      );
+
+    html += `
+      <h1>${initTasks[theme].question}</h1>
+      <table><thead><tr><th>Имя</th><th>Телеграм</th><th>Рейтинг</th></tr></thead><tbody>
+      ${rows}
+      </tbody></table>
+    `;
+  }
+
+  scoresTablesContainer.innerHTML = html;
 };
 
 //#endregion
