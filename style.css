@@ -442,3 +442,25 @@ body {
 .scores-table th {
   padding: 5px 50px 5px 5px;
 }
+
+.scores-telegram-container {
+  height: 40px;
+  display: flex;
+  align-items: center;
+}
+
+.scores-telegram {
+  display: none;
+}
+
+.scores-telegram-container:hover .scores-telegram {
+  display: inline-block;
+}
+
+.scores-telegram-mask {
+  display: inline-block;
+}
+
+.scores-telegram-container:hover .scores-telegram-mask {
+  display: none;
+}

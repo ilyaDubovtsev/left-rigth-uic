@@ -341,7 +341,7 @@ const App = {
   gameId: null,
   user: {
     name: "",
-    email: ""
+    telegram: ""
   },
   info: {
     userSteps: 0,
@@ -753,15 +753,11 @@ function getComputedTranslateY(obj) {
 
 //#region Scores
 
-const hideEmail = (email = "noname@email") => {
-  return email.split("@")[0] + "@***";
-};
-
 const getScoresTable = () => {
   const results = Storage.getScores();
   const rows = Object.values(results)
     .map(({ errorCount, user, userSteps, limitErrors }) => {
-      const { email, name } = user;
+      const { telegram, name } = user;
       if (+limitErrors === 0) {
         return null;
       }
@@ -796,21 +792,26 @@ const getScoresTable = () => {
 
       return {
         name,
-        email,
+        telegram,
         score
       };
     })
     .filter(i => i)
     .sort((a, b) => b.score - a.score)
-    .map(({ name, email, score }) => {
+    .map(({ name, telegram, score }) => {
       return `<tr>
           <td>${name}</td>
-          <td>${hideEmail(email)}</td>
+          <td>
+            <div class="scores-telegram-container">
+                <span class="scores-telegram-mask">***</span>
+                <span class="scores-telegram">${telegram}</span>
+            </div>
+          </td>
           <td align="right">${score * 42}</td>
         </tr>`;
     });
   document.querySelector(".scores-table").innerHTML =
-    "<table><thead><tr><th>Имя</th><th>Эл. почта</th><th>Рейтинг</th></tr></thead><tbody>" +
+    "<table><thead><tr><th>Имя</th><th>Телеграм</th><th>Рейтинг</th></tr></thead><tbody>" +
     rows +
     "</tbody></table>";
 };
