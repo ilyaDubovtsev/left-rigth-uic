@@ -199,6 +199,7 @@ const initTasks = {
 
 const App = {
   gameId: null,
+  lastGameId: null,
   user: {
     name: "",
     telegram: ""
@@ -252,7 +253,15 @@ const App = {
 class Storage {
   static saveScore(data) {
     const scores = Storage.getScores();
-    scores[App.gameId] = data;
+    var gameId = App.gameId;
+    
+    if (App.lastGameId != null)
+    {
+      gameId = App.lastGameId;      
+    }
+    scores[gameId] = data;
+    
+    console.log(scores[gameId])
     try {
       const s = JSON.stringify(scores);
       localStorage.setItem("scores", s);
@@ -270,7 +279,7 @@ class Storage {
     } catch (e) {
       return {};
     }
-  }
+  } 
 }
 
 class HtmlHelper {
@@ -349,6 +358,7 @@ const onStart = function() {
 
 const onRetry = function() {
   App.info.retry++;
+  App.lastGameId = App.gameId;
   start(false);
 }
 
@@ -478,10 +488,7 @@ const nextEvent = function() {
   const data = {
     user: App.user,
     theme: App.vars.theme,
-    errorCount: App.info.errorCount,
-    userSteps: App.info.userSteps,
-    summaryScope: App.info.summaryScope,
-    limitErrors: App.vars.limitErrors
+    summaryScope: App.info.summaryScope
   };
 
   if (
@@ -635,7 +642,6 @@ function getComputedTranslateY(obj) {
 
 const getScoresTable = () => {
   const allScores = Object.values(Storage.getScores());
-
   const scoresByTheme = {};
 
   for (let [theme] of Object.entries(initTasks)) {
