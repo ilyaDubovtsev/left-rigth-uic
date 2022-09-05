@@ -557,7 +557,7 @@ const animateBrick = function(brick) {
 const userGoodChoice = (brick, side) => {
   App.controls.score.textContent = (
     Number(App.controls.score.textContent) +
-    (420 - App.info.errorCount * 42)
+    (150 - App.info.errorCount * 15)
   ).toFixed();
 
   App.info.summaryScope = Number(App.controls.score.textContent);
@@ -589,10 +589,17 @@ const userGoodChoice = (brick, side) => {
 };
 
 const userFailChoice = brick => {
-  App.controls.score.textContent = (
-    App.controls.score.textContent -
-    App.info.userSteps * 42 * (1 + +App.info.errorCount)
+  if (App.info.userSteps===0)
+  {
+    App.controls.score.textContent = String(-10);
+  }
+  else
+  {
+    App.controls.score.textContent = (
+    Number(App.controls.score.textContent) -
+    App.info.userSteps * 10 * (1 + +App.info.errorCount)
   ).toFixed();
+  }
 
   App.info.summaryScope = Number(App.controls.score.textContent);
   App.controls.left.textContent = App.tasks.length;
