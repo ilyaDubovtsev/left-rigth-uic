@@ -99,58 +99,58 @@ const initTasks = {
   },
   "c#": {
     question: "Скомпилирует ли это C#?",
-    answers: ["Да", "Нет"],
+    answers: ["Нет", "Да"],
     tasks: [
-      ["var a = 100d;", 0],
-      ["var a = 10, b = 15;", 1],
-      ["var a = new {a = 10, b = 15};", 0],
-      ["foreach(var value of array)", 1],
-      ["new HashSet<int>().Add(10).ToString();", 0],
-      ["var yield = \"no\";", 0],
-      ["double x = new object[15];", 1],
-      ["yield break;", 0],
-      ["var a = new[] {1, 2, 3};", 0],
-      ["string 1foo = \"\";", 1],
-      ["new List<int>().Add(10).Add(11);", 1],
-      ["double a = (int) float.Parse(\"10\");", 0],
-      ["var a = [1, 2, 3]", 1],
-      ["new StringBuilder().Append(\"not\").Append(\"compiled\");", 0],
-      ["var a = 10 and b = 15;", 1],
-      ["var a = () => 15;", 1],
-      ["Func<byte> a = () => 1000;", 1],
-      ["int async = 10, await = 15;", 0],
-      ["var a = new [1, 2, 3]", 1],
-      ["var a = {a = 10, b = 15};", 1],
+      ["var a = 100d;", 1],
+      ["var a = 10, b = 15;", 0],
+      ["var a = new {a = 10, b = 15};", 1],
+      ["foreach(var value of array)", 0],
+      ["new HashSet<int>().Add(10).ToString();", 1],
+      ["var yield = \"no\";", 1],
+      ["double x = new object[15];", 0],
+      ["yield break;", 1],
+      ["var a = new[] {1, 2, 3};", 1],
+      ["string 1foo = \"\";", 0],
+      ["new List<int>().Add(10).Add(11);", 0],
+      ["double a = (int) float.Parse(\"10\");", 1],
+      ["var a = [1, 2, 3]", 0],
+      ["new StringBuilder().Append(\"not\").Append(\"compiled\");", 1],
+      ["var a = 10 and b = 15;", 0],
+      ["var a = () => 15;", 0],
+      ["Func<byte> a = () => 1000;", 0],
+      ["int async = 10, await = 15;", 1],
+      ["var a = new [1, 2, 3]", 0],
+      ["var a = {a = 10, b = 15};", 0],
     ]
   },
   "pattern": {
-    question: "Является ли это паттерном проектирования?",
-    answers: ["Да", "Нет"],
+    question: "Это паттерн проектирования?",
+    answers: ["Нет", "Да"],
     tasks: [
-      ["мост", 0],
-      ["декоратор", 0],
-      ["фасад", 0],
-      ["заместитель", 0],
-      ["посредник", 0],
-      ["хранитель", 0],
-      ["наблюдатель", 0],
-      ["стратегия", 0],
-      ["посетитель", 0],
-      ["одиночка", 0],
-      ["фабричный метод", 0],
-      ["строитель", 0],
-      ["туннель", 1],
-      ["курьер", 1],
-      ["сборщик", 1],
-      ["упаковщик", 1],
-      ["блоб", 1],
-      ["бензиновая фабика", 1],
-      ["дымоход", 1],
-      ["перестыковка", 1],
-      ["сохранение или смерть", 1],
-      ["состояние гонки", 1],
-      ["инверсия абстракции", 1],
-      ["адаптер", 0],
+      ["мост", 1],
+      ["декоратор", 1],
+      ["фасад", 1],
+      ["заместитель", 1],
+      ["посредник", 1],
+      ["хранитель", 1],
+      ["наблюдатель", 1],
+      ["стратегия", 1],
+      ["посетитель", 1],
+      ["одиночка", 1],
+      ["фабричный метод", 1],
+      ["строитель", 1],
+      ["туннель", 0],
+      ["курьер", 0],
+      ["сборщик", 0],
+      ["упаковщик", 0],
+      ["блоб", 0],
+      ["бензиновая фабика", 0],
+      ["дымоход", 0],
+      ["перестыковка", 0],
+      ["сохранение или смерть", 0],
+      ["состояние гонки", 0],
+      ["инверсия абстракции", 0],
+      ["адаптер", 1],
     ]
   },
   "bug": {
@@ -167,12 +167,10 @@ const initTasks = {
       ["🍔", 0],
       ["🍇", 1],
       ["🍋", 0],
-      ["🍓🐛🍓🍓", 0],
       ["🐌", 0],
       ["🕷️", 0],
       ["🙉", 0],
       ["🐈", 1],
-      ["🐓🥚", 0],
       ["🐢", 0],
       ["🐘", 1],
       ["🍀", 1],
@@ -181,7 +179,6 @@ const initTasks = {
       ["🔥", 0],
       ["🌈", 1],
       ["🚬", 0],
-      ["🐄🥃", 0],
       ["💻🛌", 0],
       ["💵", 1],
       ["🌳💩", 1],
@@ -236,7 +233,8 @@ const App = {
     answersRight: document.querySelector(".answers-right"),
     scoresTable: document.querySelector(".scores-table"),
     counter: document.querySelector(".counter"),
-    left: document.querySelector("#left")
+    left: document.querySelector("#left"),
+    retry: document.querySelector(".retry")
   },
   events: {
     loose: function(data) {
@@ -295,8 +293,18 @@ class HtmlHelper {
       result.textContent = "Победа";
     }
 
-    repeatContainer.querySelector(".repeat-link#finish-link").innerHTML = lose ? "Сдаться и дать поиграть другому" : "Дать поиграть другому";
-    repeatContainer.querySelector(".repeat-link#retry-link").innerHTML = lose ? "Не сдаваться и попробовать еще раз" : "Попробовать еще раз";
+    repeatContainer.querySelector(".repeat-link#finish-link").innerHTML = lose  ? "Сдаться и дать поиграть другому" : "Дать поиграть другому";
+    
+    if (Number(App.controls.retry) <1)
+    {
+      repeatContainer.querySelector(".repeat-link#retry-link").innerHTML = lose  ?"Не сдаваться и попробовать еще раз" : "Попробовать еще раз";
+    }
+    else
+    {
+      repeatContainer.querySelector(".repeat-link#retry-link").remove();
+    }
+    console.log(App.constants.maxSteps);
+    console.log(App.controls.retry)
 
     score.textContent = App.controls.score.textContent;     
   }
@@ -370,6 +378,7 @@ const start = function(newGame) {
     App.controls.limit.style.bottom = App.constants.height * App.vars.limitErrors + "px";
 
     App.initialized = true;
+    App.controls.retry = 0;
   }
 
   App.tasks = Array.from(App.originalTasks);
@@ -471,7 +480,7 @@ const nextEvent = function() {
     errorCount: App.info.errorCount,
     userSteps: App.info.userSteps,
     summaryScope: App.info.summaryScope,
-    limitErrors: App.vars.limitErrors   
+    limitErrors: App.vars.limitErrors
   };
 
   if (
@@ -481,8 +490,10 @@ const nextEvent = function() {
     run();
   } else if (App.info.errorCount >= App.vars.limitErrors) {
     App.events.loose(data);
+    App.controls.retry ++;
   } else if (App.info.userSteps >= App.constants.maxSteps) {
     App.events.win(data);
+    App.controls.retry ++;
   }
 };
 
