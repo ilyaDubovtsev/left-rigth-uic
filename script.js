@@ -345,7 +345,8 @@ const App = {
   },
   info: {
     userSteps: 0,
-    errorCount: 0
+    errorCount: 0,
+    summaryScope: 0
   },
   vars: {
     theme: "",
@@ -434,7 +435,7 @@ class HtmlHelper {
     repeatContainer.querySelector(".repeat-link#finish-link").innerHTML = lose ? "Сдаться и дать поиграть другому" : "Дать поиграть другому";
     repeatContainer.querySelector(".repeat-link#retry-link").innerHTML = lose ? "Не сдаваться и попробовать еще раз" : "Попробовать еще раз";
 
-    score.textContent = App.controls.score.textContent;
+    score.textContent = App.controls.score.textContent;     
   }
 }
 
@@ -518,6 +519,7 @@ const start = function(newGame) {
 
   App.info.errorCount = 0;
   App.info.userSteps = 0;
+  App.info.summaryScope = 0;
   App.controls.deck.innerHTML = "";
   App.controls.counter.innerHTML = App.vars.limitErrors;
   App.controls.left.innerHTML = App.tasks.length;
@@ -605,7 +607,8 @@ const nextEvent = function() {
     theme: App.vars.theme,
     errorCount: App.info.errorCount,
     userSteps: App.info.userSteps,
-    limitErrors: App.vars.limitErrors
+    summaryScope: App.info.summaryScope,
+    limitErrors: App.vars.limitErrors   
   };
 
   if (
@@ -677,6 +680,8 @@ const userGoodChoice = (brick, side) => {
     (420 - App.info.errorCount * 42)
   ).toFixed();
 
+  App.info.summaryScope = Number(App.controls.score.textContent);
+  
   App.controls.left.textContent = App.tasks.length;
 
   let position = brick.getBoundingClientRect();
@@ -709,6 +714,7 @@ const userFailChoice = brick => {
     App.info.userSteps * 42 * (1 + +App.info.errorCount)
   ).toFixed();
 
+  App.info.summaryScope = Number(App.controls.score.textContent);
   App.controls.left.textContent = App.tasks.length;
 
   brick.style.transitionDuration = "";
@@ -769,39 +775,11 @@ const getScoresTable = () => {
 
   for (let [theme, scores] of Object.entries(scoresByTheme)) {
     const rows = scores
-        .map(({ errorCount, user, userSteps, limitErrors }) => {
-          const { telegram, name } = user;
-          if (+limitErrors === 0) {
-            return null;
-          }
+        .map(({ user, summaryScope }) => {
+          const { telegram, name } = user;         
 
-          let rightAnswers = userSteps - errorCount;
-          let score;
-          const isWin = errorCount < +limitErrors;
-
-          if (+limitErrors === 5) {
-            if (isWin) {
-              score = errorCount === 0 ? rightAnswers + 10 : rightAnswers + 5;
-            } else {
-              score = rightAnswers - 10;
-            }
-          }
-
-          if (+limitErrors === 3) {
-            if (isWin) {
-              score = errorCount === 0 ? rightAnswers + 12 : rightAnswers + 7;
-            } else {
-              score = rightAnswers - 13;
-            }
-          }
-
-          if (+limitErrors === 1) {
-            if (isWin) {
-              score = errorCount === 0 ? rightAnswers + 14 : rightAnswers + 9;
-            } else {
-              score = rightAnswers - 15;
-            }
-          }
+          var score;
+          score = Number(summaryScope);
 
         return {
           name,
@@ -820,7 +798,7 @@ const getScoresTable = () => {
                 <span class="scores-telegram">${telegram}</span>
             </div>
           </td>
-          <td align="right">${score * 42}</td>
+          <td align="right">${score}</td>
           </tr>`;
         }
       );
