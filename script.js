@@ -206,7 +206,8 @@ const App = {
   info: {
     userSteps: 0,
     errorCount: 0,
-    summaryScope: 0
+    summaryScope: 0,
+    retry: 0
   },
   vars: {
     theme: "",
@@ -233,8 +234,7 @@ const App = {
     answersRight: document.querySelector(".answers-right"),
     scoresTable: document.querySelector(".scores-table"),
     counter: document.querySelector(".counter"),
-    left: document.querySelector("#left"),
-    retry: document.querySelector(".retry")
+    left: document.querySelector("#left")
   },
   events: {
     loose: function(data) {
@@ -295,7 +295,7 @@ class HtmlHelper {
 
     repeatContainer.querySelector(".repeat-link#finish-link").innerHTML = lose  ? "Сдаться и дать поиграть другому" : "Дать поиграть другому";
     
-    if (Number(App.controls.retry) <1)
+    if (Number(App.info.retry) <1)
     {
       repeatContainer.querySelector(".repeat-link#retry-link").innerHTML = lose  ?"Не сдаваться и попробовать еще раз" : "Попробовать еще раз";
     }
@@ -304,7 +304,7 @@ class HtmlHelper {
       repeatContainer.querySelector(".repeat-link#retry-link").remove();
     }
     console.log(App.constants.maxSteps);
-    console.log(App.controls.retry)
+    console.log(App.info.retry)
 
     score.textContent = App.controls.score.textContent;     
   }
@@ -348,6 +348,7 @@ const onStart = function() {
 }
 
 const onRetry = function() {
+  App.info.retry++;
   start(false);
 }
 
@@ -378,7 +379,7 @@ const start = function(newGame) {
     App.controls.limit.style.bottom = App.constants.height * App.vars.limitErrors + "px";
 
     App.initialized = true;
-    App.controls.retry = 0;
+    App.info.retry = 0;
   }
 
   App.tasks = Array.from(App.originalTasks);
@@ -489,11 +490,9 @@ const nextEvent = function() {
   ) {
     run();
   } else if (App.info.errorCount >= App.vars.limitErrors) {
-    App.events.loose(data);
-    App.controls.retry ++;
+    App.events.loose(data);    
   } else if (App.info.userSteps >= App.constants.maxSteps) {
-    App.events.win(data);
-    App.controls.retry ++;
+    App.events.win(data);    
   }
 };
 
