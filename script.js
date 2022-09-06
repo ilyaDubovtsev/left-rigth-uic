@@ -243,7 +243,7 @@ const App = {
       HtmlHelper.renderScore("lose");
     },
 
-    win: function(data) {
+    win: function(data) {    
       Storage.saveScore(data);
       HtmlHelper.renderScore("win");
     }
@@ -299,12 +299,19 @@ class HtmlHelper {
     } else if (verdict === "win") {
       result.classList.remove("lose");
       result.classList.add("win");
-      result.textContent = "Победа";
+      
+      if(App.info.errorCount === 0 && Number(App.info.retry) === 0)
+      {        
+        result.textContent = "Вы восхитительны!!! Бонус очков x2";        
+      }else
+      {
+        result.textContent = "Победа";
+      }
     }
-
+    
     repeatContainer.querySelector(".repeat-link#finish-link").innerHTML = lose  ? "Сдаться и дать поиграть другому" : "Дать поиграть другому";
     
-    if (Number(App.info.retry) <1)
+    if (Number(App.info.retry) <1 && Number(App.info.errorCount) !== 0)
     {
       repeatContainer.querySelector(".repeat-link#retry-link").innerHTML = lose  ?"Не сдаваться и попробовать еще раз" : "Попробовать еще раз";
     }
@@ -312,8 +319,9 @@ class HtmlHelper {
     {
       repeatContainer.querySelector(".repeat-link#retry-link").remove();
     }
+    
     console.log(App.constants.maxSteps);
-    console.log(App.info.retry)
+    console.log(score.textContent);
 
     score.textContent = App.controls.score.textContent;     
   }
@@ -459,7 +467,7 @@ const run = function() {
     brick.removeEventListener("transitionend", onDropTransitionEnd);
     document.removeEventListener("keydown", onArrowKeyDown);
 
-    // проверяем правильный ли выбор сдел пользователь
+    // проверяем правильный ли выбор сделал пользователь
     const userSide = evt.keyCode === leftArrow ? 0 : 1;
     if (userSide === side) {
       userGoodChoice(brick, side);
@@ -499,7 +507,18 @@ const nextEvent = function() {
   } else if (App.info.errorCount >= App.vars.limitErrors) {
     App.events.loose(data);    
   } else if (App.info.userSteps >= App.constants.maxSteps) {
-    App.events.win(data);    
+    if(App.info.errorCount === 0 && App.info.retry === 0)
+    {
+      App.info.summaryScope = App.info.summaryScope *2;
+      data.summaryScope = App.info.summaryScope;
+      App.controls.score.textContent = App.info.summaryScope;
+      console.log("А: "+App.controls.score.textContent);
+      console.log("B: "+App.info.summaryScope);
+    }
+    
+    App.events.win(data);
+    console.log("итог: "+App.info.summaryScope);
+    console.log("ошибки: "+App.info.errorCount);
   }
 };
 
