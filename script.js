@@ -200,6 +200,7 @@ const initTasks = {
 const App = {
   gameId: null,
   lastGameId: null,
+  time: new Date(),
   user: {
     name: "",
     telegram: ""
@@ -239,7 +240,7 @@ const App = {
   },
   events: {
     loose: function(data) {
-      Storage.saveScore(data);
+      Storage.saveScore(data);      
       HtmlHelper.renderScore("lose");
     },
 
@@ -414,7 +415,7 @@ const start = function(newGame) {
   App.controls.deck.innerHTML = "";
   App.controls.counter.innerHTML = App.vars.limitErrors;
   App.controls.left.innerHTML = App.tasks.length;
-
+  
   countToZero();
 };
 
@@ -496,7 +497,8 @@ const nextEvent = function() {
   const data = {
     user: App.user,
     theme: App.vars.theme,
-    summaryScope: App.info.summaryScope
+    summaryScope: App.info.summaryScope,
+    time: App.time
   };
 
   if (
@@ -504,21 +506,19 @@ const nextEvent = function() {
     App.info.userSteps < App.constants.maxSteps
   ) {
     run();
-  } else if (App.info.errorCount >= App.vars.limitErrors) {
+  } else
+    data.time = new Date() - App.time;
+    if (App.info.errorCount >= App.vars.limitErrors) {
     App.events.loose(data);    
-  } else if (App.info.userSteps >= App.constants.maxSteps) {
+  } else
+    if (App.info.userSteps >= App.constants.maxSteps) {
     if(App.info.errorCount === 0 && App.info.retry === 0)
     {
       App.info.summaryScope = App.info.summaryScope *2;
       data.summaryScope = App.info.summaryScope;
       App.controls.score.textContent = App.info.summaryScope;
-      console.log("А: "+App.controls.score.textContent);
-      console.log("B: "+App.info.summaryScope);
-    }
-    
+    }    
     App.events.win(data);
-    console.log("итог: "+App.info.summaryScope);
-    console.log("ошибки: "+App.info.errorCount);
   }
 };
 
