@@ -484,6 +484,7 @@ const run = function() {
     brick.style.transitionDuration = "";
 
     document.removeEventListener("keydown", onArrowKeyDown);
+    scoresForUserChoice(false);
     App.info.userSteps++;
     App.info.errorCount++;
     nextEvent();
@@ -574,14 +575,7 @@ const animateBrick = function(brick) {
 };
 
 const userGoodChoice = (brick, side) => {
-  App.controls.score.textContent = (
-    Number(App.controls.score.textContent) +
-    (150 - App.info.errorCount * 15)
-  ).toFixed();
-
-  App.info.summaryScope = Number(App.controls.score.textContent);
-  
-  App.controls.left.textContent = App.tasks.length;
+  scoresForUserChoice(true);
 
   let position = brick.getBoundingClientRect();
 
@@ -608,21 +602,8 @@ const userGoodChoice = (brick, side) => {
 };
 
 const userFailChoice = brick => {
-  if (App.info.userSteps===0)
-  {
-    App.controls.score.textContent = String(-10);
-  }
-  else
-  {
-    App.controls.score.textContent = (
-    Number(App.controls.score.textContent) -
-    App.info.userSteps * 10 * (1 + +App.info.errorCount)
-  ).toFixed();
-  }
-
-  App.info.summaryScope = Number(App.controls.score.textContent);
-  App.controls.left.textContent = App.tasks.length;
-
+  scoresForUserChoice(false);
+  
   brick.style.transitionDuration = "";
   brick.style.transform = `translateX(-50%) translateY(${getComputedTranslateY(
     brick
@@ -651,6 +632,26 @@ const userFailChoice = brick => {
 
   brick.addEventListener("transitionend", onFailTransitionEnd);
 };
+
+const scoresForUserChoice = function(isGood) {
+  var score;
+  if (isGood === false && App.info.userSteps === 0) 
+  {
+    App.controls.score.textContent = String(-10);         
+  } else {
+    if (isGood === true) {
+      score = 150 - App.info.errorCount * 15;
+      
+    } else {
+      score = -App.info.userSteps * 10 * (1 + +App.info.errorCount)
+    }
+    App.controls.score.textContent = (
+        Number(App.controls.score.textContent) +
+        score).toFixed();
+  }  
+  App.info.summaryScope = Number(App.controls.score.textContent);
+  App.controls.left.textContent = App.tasks.length;
+}
 
 function getComputedTranslateY(obj) {
   if (!window.getComputedStyle) return;
