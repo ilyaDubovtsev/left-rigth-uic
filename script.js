@@ -3,18 +3,6 @@
 //#region Tasks
 
 const initTasks = {
-  test: {
-    question: "test",
-    answers: ["right", "wrong"],
-    tasks: [
-        ["choose", 0],
-        ["choose", 0],
-        ["choose", 0],
-        ["choose", 0],
-        ["choose", 0],
-        ["choose", 0],
-    ]
-  },  
   java: {
     question: "Это Java 8.x или JavaScript?",
     answers: ["Java", "JavaScript"],
